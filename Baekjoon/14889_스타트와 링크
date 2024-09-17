@@ -3,6 +3,7 @@
 # 파이썬 문법 : continue, break, pass, return 헷갈림
 # 시간 초과 : 몇 번째 사람인지가 아니라 몇 팀인지로 만들기 <= n 의 크기가 더 작아진다.
 
+
 n = int(input())
 S = []
 for i in range(n):
