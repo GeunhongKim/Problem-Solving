@@ -1,3 +1,45 @@
 # 시간 초과 : 안되는 경우 가지치기 하기 with deep copy
 # 시간 초과 : double counting 해소
 # 파이썬 문법 : continue, break, pass, return 헷갈림
+# 시간 초과 : 몇 번째 사람인지가 아니라 몇 팀인지로 만들기 <= n 의 크기가 더 작아진다.
+
+n = int(input())
+S = []
+for i in range(n):
+    S.append(list(map(int,input().split(" "))))
+
+check = [0 for i in range(n)]
+
+mindiff = 10**5
+
+def f(l,depth):
+    if l.count(1) == n//2:
+        start = 0
+        link = 0
+        for i in range(n):
+            for j in range(n):
+                if l[i] == 0 and l[j] == 0:
+                    start += S[i][j]
+
+        for i in range(n):
+            for j in range(n):
+                if l[i] == 1 and l[j] == 1:
+                    link += S[i][j]
+                    
+        diff = abs(start-link)
+        global mindiff
+        if diff < mindiff:
+            mindiff = diff
+        return
+
+    if depth == n:
+        return
+
+    prev = check[:]
+    for i in range(2):
+        check[depth] = i
+        f(l,depth+1)
+
+f(check,0)
+
+print(mindiff)
