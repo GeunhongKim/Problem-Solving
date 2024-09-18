@@ -1,1 +1,66 @@
-//
+# 탐색 중 accessible 한 경우가 아니면 돌아가는 것을 효율적으로 구현하는 법
+# for 안에서 여러 조건 확인해야 할 경우, 하나 만족하면 바로 빠져나가는 법
+
+
+
+l = []  # 빈자리 좌표 넣을 리스트
+table = []  # 스도쿠 입력 넣을 2 dimension 리스트
+for i in range(9):
+    table.append(list(map(int,input().split(" "))))
+
+for i in range(9):       # i는 가로줄, j는 세로줄 의미
+    for j in range(9):
+        if table[i][j] == 0:
+            l.append([i,j])
+
+check = 0
+
+def f(table,l,depth): # depth는 채울 구멍의 번호 의미함
+    global check
+    if depth == len(l): # 만약 전부 돌았으면
+        for i in range(9):
+            for j in range(9):
+                if j == 8:
+                    print(table[i][j])
+                else:
+                    print(table[i][j], end=" ")
+        check = 1    
+        return
+
+    table_2 = table[:]
+
+    # 각 빈자리에 숫자 하나씩 넣어가며 확인
+    for i in range (1,10):
+        if check == 1:
+            break
+
+        good_bye = False
+
+        # 한 가로줄에 두개 이상 있나
+        if i in table[l[depth][0]]:
+            continue
+
+        # 한 세로줄에 두개 이상 있나
+
+        for j in range(9):
+            if i == table[j][l[depth][1]]:
+                good_bye = True
+        if good_bye:
+            continue
+
+        # 한 구역에 두개 이상 있나
+        for j in range((l[depth][0]//3)*3, (l[depth][0]//3)*3+3):  # 가로줄 구역 찾기
+            for k in range((l[depth][1]//3)*3, (l[depth][1]//3)*3+3):   # 세로줄 구역 찾기
+                if i == table[j][k]:
+                    good_bye = True
+        if good_bye:
+            continue
+
+        # 조건 전부 만족하면 다음 칸 채우러 가기
+        table[l[depth][0]][l[depth][1]] = i
+        f(table,l,depth+1)
+        table[l[depth][0]][l[depth][1]] = 0
+
+
+
+f(table,l,0)
