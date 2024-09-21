@@ -1,0 +1,68 @@
+# 반복문 조건문 섞어 쓸때 안에 넣어야 하는지 밖에 넣어야 하는지 잘 생각하디 : 조건 확인하는 부분에서 생각보다 자주 실수한다. 더 꼼꼼히 하자.
+
+
+n = int(input()) # 전체 종이 크기
+l=[]
+for i in range(n):
+    l.append(list(map(int,input().split(" "))))
+
+white = 0  # 하얀 조각 수
+blue = 0   # 파랑 조각 수
+
+# 주어진 종이에 대해 흰색/파란색 조각 개수 세는 함수
+def f(l):
+    global white
+    global blue
+    sum = 0
+    if len(l) == 1: # 최소 단위 조각까지 나누었을 경우
+        if l[0] == 1:
+            blue =+ 1
+            return
+
+        if l[0] == 0:
+            white += 1
+            return
+
+    # 전체가 파란 조각 / 흰색 조각만 있을 경우
+    for i in range(len(l)): 
+        for j in range(len(l)):
+            sum += l[i][j]
+    if sum == 0:  # 전체가 하얀 조각
+            white += 1
+            return
+
+    if sum == len(l)**2:  # 전체가 파란 조각
+            blue += 1
+            return
+            
+    # 1사분면
+    f1 = [] 
+    for i in range(len(l)//2):
+        f1.append(l[i][0:len(l)//2])
+
+    # 2사분면
+    f2 = []
+    for i in range(len(l)//2):
+        f2.append(l[i][len(l)//2:len(l)])
+
+    # 3사분면
+    f3 = []
+    for i in range(len(l)//2,len(l)):
+        f3.append(l[i][0:len(l)//2])
+
+    # 4사분면
+    f4 = []
+    for i in range(len(l)//2,len(l)):
+        f4.append(l[i][len(l)//2:len(l)])
+
+    # 재귀 호출
+    f(f1)
+    f(f2)
+    f(f3)
+    f(f4)
+
+
+f(l)
+
+print(white)
+print(blue)
