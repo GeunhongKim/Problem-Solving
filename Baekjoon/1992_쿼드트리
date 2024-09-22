@@ -1,0 +1,54 @@
+# 색종이 만들기와 거의 유사한 문제, 피드백할 문제가 거의 없다.
+# 문제를 잘못 읽어서 쓸데없는 예외 처리를 했다. 문제를 잘 읽도록 하자.
+# 
+
+n = int(input())
+l=[]
+for i in range(n):
+    l.append(list(map(int,input())))
+
+def f(l):
+    if len(l) == 1:
+        pass
+
+    sum = 0 
+
+    for i in range(len(l)): 
+        for j in range(len(l)):
+            sum += l[i][j]
+    if sum == 0:
+        print("0",end="")
+        return
+    if sum == len(l)**2:
+        print("1",end="")
+        return
+
+
+
+    f1 = []
+    for i in range(len(l)//2):
+        f1.append(l[i][0:len(l)//2])
+
+    f2 = []
+    for i in range(len(l)//2):
+        f2.append(l[i][len(l)//2:len(l)])
+
+    f3 = []
+    for i in range(len(l)//2,len(l)):
+        f3.append(l[i][0:len(l)//2])
+
+    f4 = []
+    for i in range(len(l)//2,len(l)):
+        f4.append(l[i][len(l)//2:len(l)])
+
+
+
+    print("(",end="")
+    f(f1)
+    f(f2)
+    f(f3)
+    f(f4)
+    print(")",end="")
+
+
+f(l)
