@@ -1,0 +1,106 @@
+# 색종이 만들기, 쿼드트리 문제와 매우 비슷한 유형으로 크게 어려운 점은 없었다.
+
+n = int(input()) # 입력 받기
+l = []
+
+for i in range(n):
+    l.append(list(map(int,input().split(" "))))
+
+             
+# 재귀함수 구현
+
+type_a = 0
+type_b = 0
+type_c = 0
+
+def f(l):
+    global type_a
+    global type_b
+    global type_c
+    sum = 0
+    count_zero = 0
+    if len(l) == 1:  # 최소 단위 조각까지 나누었을 경우
+        if l[0] == 0:
+            type_a =+ 1
+            return
+
+        if l[0] == 1:
+            type_b += 1
+            return
+
+        if l[0] == -1:
+            type_c += 1
+            return
+
+    for i in range(len(l)):  # 종이가 전부 1, 0, -1 로 이루어져 있을 경우
+        for j in range(len(l)):
+            sum += l[i][j]
+            if l[i][j] == 0:
+                count_zero += 1
+
+    if count_zero == len(l)**2:  # 0 으로만 이루어져 있을 경우 
+        type_a += 1
+        return
+
+    if sum == len(l)**2:  # 1로만 이루어져 있을 경우
+        type_b += 1
+        return
+
+    if sum == -len(l)**2:  # -1 로만 이루어져 있을 경우
+        type_c += 1
+        return
+
+
+    f1 = []
+    for i in range(len(l)//3):
+        f1.append(l[i][0:len(l)//3])
+
+    f2 = []
+    for i in range(len(l)//3):
+        f2.append(l[i][len(l)//3:2*(len(l)//3)])
+
+    f3 = []
+    for i in range(len(l)//3):
+        f3.append(l[i][2*(len(l)//3):len(l)])
+
+    f4 = []
+    for i in range(len(l)//3,2*(len(l)//3)):
+        f4.append(l[i][0:len(l)//3])
+
+    f5 = []
+    for i in range(len(l)//3,2*(len(l)//3)):
+        f5.append(l[i][len(l)//3:2*(len(l)//3)])
+
+    f6 = []
+    for i in range(len(l)//3,2*(len(l)//3)):
+        f6.append(l[i][2*(len(l)//3):len(l)])
+
+    f7 = []
+    for i in range(2*(len(l)//3),len(l)):
+        f7.append(l[i][0:len(l)//3])
+
+    f8 = []
+    for i in range(2*(len(l)//3),len(l)):
+        f8.append(l[i][len(l)//3:2*(len(l)//3)])   
+
+    f9 = []
+    for i in range(2*(len(l)//3),len(l)):
+        f9.append(l[i][2*(len(l)//3):len(l)])   
+
+    f(f1)
+    f(f2)
+    f(f3)
+    f(f4)
+    f(f5)
+    f(f6)
+    f(f7)
+    f(f8)
+    f(f9)
+
+    return
+
+f(l)
+
+print(type_c)
+print(type_a)
+print(type_b)
