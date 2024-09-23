@@ -1,0 +1,10 @@
+# 기초적인 재귀함수를 만드는 법에 대한 문제. 크게 어려운 것은 없었다.
+
+n = int(input())
+def f(n):
+    if n == 0:
+        return 1
+    else:
+        return n*f(n-1)
+
+print(f(n))
