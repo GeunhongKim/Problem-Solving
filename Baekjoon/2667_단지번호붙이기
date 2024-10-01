@@ -1,0 +1,55 @@
+# 처음 맛보는 그래프 탐색의 응용 문제, 처음 봤을때 대충 떠올린 흐름대로 풀어서 성공했다.
+# 탐색할때 상하좌우 재귀호출할때 조건구현하는 디테일 실수 나왔다. 집중도 조금만 더 올려보자.
+
+
+
+# 입력
+n = int(input())
+l = []
+
+for i in range(n):
+    l.append([])
+    d = input()
+    for j in range(n):
+        l[i].append(int(d[j]))
+
+discovered = []
+
+# 단지 수 세기
+count = 0
+
+# discovered 만들기
+for i in range(n):
+    discovered.append([0 for i in range(n)])
+
+# 넓이 기록할 리스트 만들기
+rem_area = []
+
+# 호출할 탐색 함수 구현
+def dfs(l,i,j):
+    global area
+    if l[i][j] == 1 and discovered[i][j] == 0:
+        area += 1
+        print(area, i, j)
+        discovered[i][j] = 1
+        if i < n-1:        
+            dfs(l,i+1,j)
+        if j < n-1:
+            dfs(l,i,j+1)
+        if i > 0:
+            dfs(l,i-1,j)
+        if j > 0:
+            dfs(l,i,j-1)
+
+    else:
+        return
+
+# 입력에 대한 탐색 수행
+for i in range(n):
+    for j in range(n):
+        if l[i][j] == 1 and discovered[i][j] == 0:
+            area = 0
+            dfs(l,i,j)
+            rem_area.append(area)
+            count += 1
+            print(i,j, count, area)
