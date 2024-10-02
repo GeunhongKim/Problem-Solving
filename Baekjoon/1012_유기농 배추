@@ -1,0 +1,57 @@
+# 2667번 문제와 매우 유사한 문제여서 새로 배워가는 것은 크게 없었으며, 구현 과정을 연습해 보는 것이 중점이었던 문제이다.
+# 재귀깊이 설정하는 문법을 까먹어서 검색해야 했다. 기억해두자.
+
+
+# 재귀깊이 뚫어놓기
+import sys
+sys.setrecursionlimit(10**4)
+
+# 입력 받기
+n = int(input())
+
+# dfs 구현할 함수 만들기
+def dfs(field, discovered, i, j):
+    if discovered[i][j] == 0 and field[i][j] == 1:
+        discovered[i][j] = 1
+        if i > 0:
+            dfs(field,discovered,i-1,j)
+        if j > 0:
+            dfs(field,discovered,i,j-1)
+        if i < height-1:
+            dfs(field,discovered,i+1,j)
+        if j < width-1:
+            dfs(field,discovered,i,j+1)
+    return
+
+# 카운트 리스트 만들기
+c = []
+
+# 수행하기
+for i in range(n):
+    count = 0
+    width, height, number = map(int, input().split())
+
+    # discovered와 배추밭 만들기
+    field = []
+    discovered = []
+
+    for i in range(height):
+        field.append([0 for i in range(width)])
+        discovered.append([0 for i in range(width)])
+
+    for i in range(number):
+        a,b = map(int,input().split())
+        field[b][a] = 1
+
+    # 배추밭 순회하기
+    for i in range(height):
+        for j in range(width):
+            if field[i][j] == 1 and discovered[i][j] == 0:
+                count += 1
+                dfs(field,discovered,i,j)
+
+    # 필요한 배추흰지렁이의 수 저장하기
+    c.append(count)
+    
+for i in range(len(c)):
+    print(c[i])
