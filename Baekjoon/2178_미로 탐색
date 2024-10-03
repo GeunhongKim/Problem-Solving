@@ -1,0 +1,63 @@
+# 최근 푼 문제 중에 가장 피드백 할 것이 많은 문제, 처음에 dfs로 구현했다가 시간 초과 나고 bfs로 선회했는데 구현 단계에서 많이 버벅거렸다.
+# 먼저 bfs가 최단경로를 제안한다는 것 자체가 아직 완벽하게 이해되지 않는다.
+# bfs 구현 과정에서 문제점 : popleft() 쓰는 것을 헷갈려서 pop() 사용했다는 것 => bfs 작동 원리를 아직 제대로 이해하지 못한 듯. 시간 날 때마다 pseudocode 써보면서 익숙해져야 할듯.
+# bfs 구현 과정에서 문제점 : count 하는 것 생각 잘못해서 꼬였다 => 일단 인터넷 찾아 보고 discovered 에 저장하는 방식 사용했는데, 어떨 때 어떻게 count 하는게 좋은지 체화되지 않았다.
+
+
+
+# import 하기
+import sys
+sys.setrecursionlimit(10**4)
+
+from collections import deque 
+
+# 기본 입력값 받기
+height, width = map(int, input().split())
+
+# 미로 구현하기
+maze = []
+for i in range(height):
+    l = []
+    a = input()
+    for j in range(width):
+        l.append(int(a[j]))
+    maze.append(l)
+
+# discovered 구현하기
+discovered = []
+for i in range(height):
+    discovered.append([0  for i in range(width)])
+
+# count_rem 구현하기
+count_rem = height*width
+
+# bfs 구현하기
+def bfs(maze, discovered, start1, start2):
+    global count_rem
+    stack = deque([[start1,start2]])  # deque로 stack 구현
+    discovered[start1][start2] = 1
+    while stack:
+        v = stack.popleft()
+        if v[0] == height-1 and v[1] == width-1:  # 도착점에 도달했을 경우
+            print(discovered[v[0]][v[1]])
+
+        # 주변 좌표로 이동
+        if v[0] > 0 and maze[v[0]-1][v[1]] == 1 and discovered[v[0]-1][v[1]] == 0:
+            stack.append([v[0]-1,v[1]])
+            discovered[v[0]-1][v[1]] = discovered[v[0]][v[1]] + 1
+
+        if v[1] > 0 and  maze[v[0]][v[1]-1] == 1 and discovered[v[0]][v[1]-1] == 0:
+            stack.append([v[0],v[1]-1])
+            discovered[v[0]][v[1]-1] = discovered[v[0]][v[1]] + 1
+
+        if v[0] < height-1 and maze[v[0]+1][v[1]] == 1 and discovered[v[0]+1][v[1]] == 0:
+            stack.append([v[0]+1,v[1]])
+            discovered[v[0]+1][v[1]] = discovered[v[0]][v[1]] + 1
+
+        if v[1] < width-1 and maze[v[0]][v[1]+1] == 1 and discovered[v[0]][v[1]+1] == 0:
+            stack.append([v[0],v[1]+1])
+            discovered[v[0]][v[1]+1] = discovered[v[0]][v[1]] + 1
+    return
+
+# 수행하기
+bfs(maze, discovered, 0, 0)
