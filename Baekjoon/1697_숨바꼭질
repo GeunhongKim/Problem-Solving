@@ -1,0 +1,44 @@
+# 2178번 문제와 비슷하게 BFS를 이용하여 최단 경로를 찾는 문제. BFS 를 구현하는 것 자체는 이전보다 익숙해진 것 같다.
+# 처음에 그냥 naive 하게 queue를 이용한 BFS를 구현했다가 메모리 초과가 나오는 것을 보고, 메모리를 최소화할 수 있도록 이미 도달한 지점은 가지 않을 수 있게 visited 를 만들었다.
+# 추가적으로 이번에도 "=" 를 "==" 로 잘못 써서 고치느라 한참을 헤맸는데, 이런 기본적인 문법이나 하는 요소들 조금 더 집중했으면 좋겠다.
+
+
+
+# 임포트 및 입력 받기
+from collections import deque
+subin, sister = map(int,input().split())
+
+visited = [-1 for i in range(100002)]
+
+def findposition(subin,sister):
+    if subin == sister:
+        print(0)
+        return
+    queue = deque([[subin, 0]])
+    visited[subin] = 0
+    while queue:
+        v = queue.popleft()
+        count = v[1]+1
+        if v[0]+1 <= 100001 and visited[v[0]+1] == -1:
+            queue.append([v[0]+1,count])
+            visited[v[0]+1] = count
+
+        if v[0]-1 > 0 and visited[v[0]-1] == -1:
+            queue.append([v[0]-1,count])
+            visited[v[0]-1] = count
+
+        if v[0]*2 <= 100001 and visited[v[0]*2] == -1:
+            queue.append([2*v[0],count])
+            visited[v[0]*2] = count
+
+        if v[0]+1 == sister:
+            print(count)
+            break
+        if v[0]-1 == sister:
+            print(count)
+            break
+        if v[0]*2 == sister:
+            print(count)
+            break
+
+findposition(subin,sister)
