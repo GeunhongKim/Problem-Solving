@@ -1,0 +1,76 @@
+# 전날 푼 16928번 문제 이후 나름 피드백이 잘 된 것 같다.
+  일단 상하좌우 순회하는 것 살짝 아쉽긴 했지만, 나름 찾아보고 배울 수 있었다.
+  전반적으로 그래프 만드는 것은 괜찮았고, 코드 깔끔하게 짜려고 노력하고 있다.
+# 2d 상하좌우 순회하는 것은 리스트 만들어서 하면 깔끔하다는 것을 배웠다. 
+# 처음에 그냥 돌리기만 하면 될 줄 알았는데, 실패 후 테스트 visited를 3D 로 만들어야 한다는 것을 알았다.
+  막혔을 때 해결방안 떠올리는 것도 만족스러웠다.
+
+
+from collections import deque
+n,m = map(int,input().split())
+room = []
+
+for i in range(n):
+    room.append(input())
+
+# visited 만들기 : 첫번째 인덱스는 부수고 갔는지(0) 안부수고 갔는지(1)
+visited = []
+a = []
+b = []
+for i in range(n):
+    a.append([0 for i in range(m)])
+for i in range(n):
+    b.append([0 for i in range(m)])
+visited.append(a)
+visited.append(b)
+
+# 답을 저장할 리스트
+answer = []
+
+# 탐색함수 구현
+def find(room):
+    queue = deque([[0,0,1]]) # 좌표(2) 벽을 부술 수 있는지(1) 를 저장
+    count = 1
+    visited[1][0][0] = 1
+    while True:
+        l = len(queue)
+        if l == 0:
+            break
+        for i in range(l):
+            v = queue.popleft()
+            if v == [n-1,m-1,1] or v == [n-1,m-1,0]:
+                answer.append(count)
+
+            if v[2] == 1: # ult =1 : 부술 기회가 있다면
+                # 탐색 시작
+                dx = [0,0,1,-1]
+                dy = [1,-1,0,0]
+                for i in range(4):
+                    nx = v[1] + dx[i]
+                    ny = v[0] + dy[i]
+                    if 0<= nx < m and 0<= ny < n and visited[1][ny][nx] == 0:   # 범위 안에 있고 처음 방문한다면
+                        if room[ny][nx] == "1":   # 이동하려는 방향이 벽이면 v[2]를 0으로 최신화 하고 queue에 넣기 (벽 뚫음)
+                            queue.append([ny,nx,0])
+                            visited[0][ny][nx] = 1
+                        elif room[ny][nx] == "0":   # 이동하려는 방향이 뚫려 있으면 queue에 그냥 넣음
+                            queue.append([ny,nx,1])
+                            visited[1][ny][nx] = 1
+
+            else:   # 부술 기회를 이미 썼다면
+                dx = [0,0,1,-1]
+                dy = [1,-1,0,0]
+                for i in range(4):
+                    nx = v[1] + dx[i]
+                    ny = v[0] + dy[i]
+                    if 0<= nx < m and 0<= ny < n and visited[0][ny][nx] == 0: # 범위 안에 있고 처음 방문한다면
+                        if room[ny][nx] == "0":   # 이동하려는 방향이 뚫려 있을 때만 queue에 넣기
+                            queue.append([ny,nx,0])
+                            visited[0][ny][nx] = 1
+        count += 1
+    if len(answer) == 0:
+        print(-1)
+        return
+    else:
+        print(min(answer))
+
+find(room)
