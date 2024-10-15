@@ -1,0 +1,67 @@
+# 이분 그래프라는 개념을 처음 배운 문제. 확실히 본 전공이 아니어서 그런지 개념적인 빈틈이 많아보인다.
+  처음 봤을 때는 크게 어렵지 않으리라고 생각했는데, 예상 외의 복병이 있었다.
+# 입력으로 주어진 node들이 모두 이어져 있지 않을 수도 있다는 생각을 못했다.
+  이 부분 해결하는 데 좀 걸렸던 것 같은데, 솔직히 아직까지도 깔끔하게 구현하지는 못했다고 생각한다.
+  그래프와 관련된 문제들 나중에 다시 풀어 보면서 깔끔하게 다듬는 과정 한 번 거쳐야 될 것 같다.
+# 그래도 구현 과정에서 True, False 자료형 이용하는 거 조금 늘은 것 같기는 하다.
+
+from collections import deque
+n = int(input())
+
+# 이분 그래프인지 탐색하는
+def bipartite(visited,color,adj,a):
+    queue = deque([a])
+    color[a-1] = False
+    while queue:
+        v = queue.popleft()
+        if v in check:
+            check.remove(v)
+        for i in adj[v]:    # 뽑은 node 의 인접 node 에 대해
+            if visited[i-1] == 0:   # 처음 방문하면 뽑은 node와 반대의 color를 저장
+                color[i-1] = not color[v-1]
+                visited[i-1] = 1
+                queue.append(i)
+            else:
+                a = not color[v-1]    # 첫 방문이 아니라면 color에 모순이 없는지 확인
+                if a == color[i-1]:
+                    pass
+                else:
+                    return "NO"
+    return "YES"
+
+
+for i in range(n):
+    # 카운트 하기
+    count = 0
+
+    # 입력 받기
+    V,E = map(int,input().split())
+    
+    # chenk 만들기
+    check = []
+    for i in range(1,V+1):
+        check.append(i)
+        
+    # adj 준비
+    adj = {}
+    for j in range(1,V+1):
+        adj[j] = []
+    for k in range(E):
+        a,b = map(int,input().split())
+        adj[a].append(b)
+        adj[b].append(a)
+
+    # 탐색
+    yes = True
+    while check:
+        if yes == False:
+            break
+        for k in check:
+            visited = [0 for i in range(V)]
+            color = [0 for i in range(V)]
+            if bipartite(visited,color,adj,k) == "NO":
+                print("NO")
+                yes = False
+                break
+    if yes == True:
+        print("YES")
