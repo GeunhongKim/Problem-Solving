@@ -1,0 +1,124 @@
+# 코드를 깔끔하게 짜야겠다는 생각을 하고 푼 문제 : 그나마 더 잘 된거 같긴 한데 중간에 생각 자체가 꼬였다.
+# 방향에 우선순위가 있을때 선호도를 결정하는 것을 bfs 구현 중 queue 안에 넣는 과정의 우선순위만으로는 못 했던,,,
+# 이 부분 수정하는데 코드가 조잡해지는 것이 불편하다고 느꼈다. 리팩더터링 연습을 해 보던가 해야지
+
+'''
+각 지점에서 bfs 해서 이동(조건 안 맞는 물고기는 패스)하며 몇 번 이동했는지 count > bfs 전부 돌려도 이동 불가하면 끝
+while{findfish{}} <= bfs가 끝까지 돌 때까지
+'''
+from collections import deque
+
+N = int(input())
+chart = []
+start = []
+
+for i in range(N):
+    c = list(map(int,input().split()))
+    chart.append(c)
+    for j in range(N):
+        if c[j] == 9:
+            start = [i,j,0]
+
+# factors about size of babyshark : growth(), belly, size
+size = 2
+belly = 0
+def growth():
+    global size, belly
+    if belly >= size:
+        size += 1
+        belly = 0
+    return
+
+
+# function for searching fishes : find_fish()
+def find_fish(startpoint):
+    cnt = 0
+    minimum_length = 1000
+    global belly, lifetime, start, detector
+    visited = [[0 for i in range(N)] for i in range(N)]
+    q = deque()
+    q.append(startpoint)
+
+    visited[startpoint[0]][startpoint[1]] = 0
+
+    # 여러 물고기 중 우선순위를 정하기 위한
+    exact = []
+    minimum_ny = 20
+    minimum_nx = 20
+
+    while q:
+        '''
+        print(q)
+        '''
+        new = q.popleft()
+        dx = [0,-1,0,1]
+        dy = [-1,0,1,0]
+        for i in range(4):
+            nx = new[1] + dx[i]
+            ny = new[0] + dy[i]
+            if nx < 0 or nx > N-1:
+                continue
+            if ny < 0 or ny > N-1:
+                continue
+
+            if visited[ny][nx] == 0 and chart[ny][nx] != -2 and chart[ny][nx] != 0 and chart[ny][nx] < size and minimum_length >= new[2]+1:
+                detector = False
+                minimum_length = new[2]+1
+                visited[ny][nx] = visited[new[0]][new[1]]+1
+                '''
+                chart[ny][nx] = 0
+                lifetime += new[2]+1
+                '''
+                # 만약 찾은 물고기가 최단거리이면 : 후보군에 추가
+                if ny < minimum_ny: # 만약 가장 위에 있다면
+                    minimum_ny = ny
+                    minimum_nx = nx
+                    exact = [ny,nx]
+                if ny == minimum_ny: # 지금까지의 최선과 같은 y좌표를 가졌다면
+                    if nx <= minimum_nx:
+                        minimum_ny = ny
+                        minimum_nx = nx
+                        exact = [ny,nx,new[2]+1]
+                        '''
+                        print("exact=",exact)
+                        '''
+                '''
+                belly += 1
+                growth()
+                '''
+            if visited[ny][nx] == 0 and chart[ny][nx] == 0:
+                q.append([ny,nx,visited[new[0]][new[1]]+1])
+                visited[ny][nx] = visited[new[0]][new[1]]+1
+                
+            if visited[ny][nx] == 0 and chart[ny][nx] == size:
+                q.append([ny,nx,visited[new[0]][new[1]]+1])
+                visited[ny][nx] = visited[new[0]][new[1]]+1
+        '''  
+        for i in range(N):
+            print(visited[i])
+        print("=====")
+        '''
+        visited[startpoint[0]][startpoint[1]] = -2
+        
+    if len(exact) != 0:
+        chart[exact[0]][exact[1]] = 0
+        start = [exact[0],exact[1],0]
+        '''
+        print(exact[0],exact[1],"life plus = ",exact[2])
+        '''
+        lifetime += exact[2]
+        belly += 1
+        growth()
+        return
+    else:
+        return
+
+# search
+lifetime = 0
+chart[start[0]][start[1]] = 0
+while True:
+    detector = True
+    find_fish(start)
+    if detector == True:
+        break
+print(lifetime)
