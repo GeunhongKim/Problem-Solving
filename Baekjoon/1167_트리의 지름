@@ -1,0 +1,58 @@
+# 여러 가지 측면에서 배워갈 것이 많은 문제
+# 먼저 트리의 지름 개념과 구하는 알고리즘에 대해 개념적으로 배울 수 있었다.
+# 입력 받을때 당연히 node 번호 순서대로 들어오는 줄 알고 이상하게 입력 받다가 맞왜틀 한참 하고서 찾았다. 집중하자.
+
+
+import sys
+from collections import deque
+N = int(input())
+tree = dict()
+
+# tree 만들기
+for i in range(1,N+1):
+    tree[i] = []
+    
+for i in range(N):
+    l = list(map(int,sys.stdin.readline().split()))
+    for j in range(0,len(l)-1):
+        if j%2 == 1:
+            tree[l[0]].append([l[j],l[j+1]]) # (node 번호,거리) 순으로 저장
+          
+# 호스트 리스트 만들기
+host = []
+for i in range(1,N+1):
+    if len(tree[i]) == 1:
+        host.append(i)
+
+# bfs 만들기 
+maximum = 0
+maxpoint = 0
+
+def bfs(startpoint):
+    global maximum, maxpoint
+    visited = [0 for i in range(N)]
+    visited[startpoint-1] = 1
+    q = deque()
+    q.append([startpoint,0])  # new : (node 번호,start로부터의 거리) 순으로 저장
+    while q:
+        '''
+        print(startpoint,q,visited)
+        '''
+        new = q.popleft()
+        for i in tree[new[0]]:  # new와 연결된 node에 대해
+            '''
+            print(i,i[0]-1,visited[i[0]-1],visited)
+            '''
+            if visited[i[0]-1] == 0:  # 처음 방문한다면 (index니까 -1 해줌)
+                q.append([i[0],i[1]+new[1]])
+                visited[i[0]-1] = 1
+                if maximum < i[1]+new[1]:  # 새 최대 거리 갱신
+                    maximum = i[1]+new[1]
+                    maxpoint = i[0]
+                    '''
+                    print(startpoint,i[1],maximum)
+                    '''
+    return maxpoint
+
+bfs(bfs(1))
+print(maximum)
