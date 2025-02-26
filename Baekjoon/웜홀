@@ -1,0 +1,38 @@
+# 웜홀
+import sys
+num = int(input())
+
+# Bellman-Ford 구현
+def BellmanFord(start,edgelist,dlist):
+    for i in range(point+1):
+        for j in range(edge):
+            '''
+            print(j,edgelist[j],dlist)
+            '''
+            if dlist[edgelist[j][0]] != INF and dlist[edgelist[j][1]] > dlist[edgelist[j][0]] + edgelist[j][2]:
+                dlist[edgelist[j][1]] = dlist[edgelist[j][0]] + edgelist[j][2]
+                if i == point:
+                    return "YES"
+    return "NO"
+
+# 각 테스트케이스 마다 deformed graph 로 Bellman-Ford 수행
+for _ in range(num):
+    point, road, worm = map(int,sys.stdin.readline().split())
+    
+    edge = 2*road + worm + point # deform given graph
+    INF = 10**10
+    dlist = [INF for _ in range(point+1)]
+    dlist[0] = 0
+    edgelist = []
+    for i in range(1,point+1): # deform given graph
+        edgelist.append([0,i,0])
+    for i in range(road):
+        a,b,c = map(int,sys.stdin.readline().split())
+        edgelist.append([a,b,c])
+        edgelist.append([b,a,c])
+    for i in range(worm):
+        a,b,c = map(int,sys.stdin.readline().split())
+        edgelist.append([a,b,-c])
+    
+    # 각 지점마다 Bellman-Ford 돌리고 결과출력하기
+    print(BellmanFord(0,edgelist,dlist))
