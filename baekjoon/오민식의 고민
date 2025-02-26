@@ -1,0 +1,72 @@
+# 오민식의 고민
+from collections import deque
+vertex,start,end,edge = map(int,input().split())
+
+
+edgelist = [] # (시작점, 끝점, 비용) 으로 저장 예정
+for i in range(edge): # edge에 드는 비용 고려
+    new = list(map(int,input().split()))
+    new[2] = -new[2]
+    edgelist.append(new)
+
+earn = list(map(int,input().split()))
+
+for element in edgelist: # 도착시 얻는 비용 고려
+    element[2] += earn[element[1]]
+
+INF = -10**10
+dlist = [INF for _ in range(vertex)]
+
+# Bellman-Ford 안에 사용할 bfs 구현
+def bfs(start, end):
+    if start == end:
+        return True
+        
+    visited = [0 for i in range(vertex)]
+    visited[start] = 1
+    q = deque()
+    q.append(start)
+    while q:
+        new = q.popleft()
+        for adj in edgelist:
+            if adj[0] == new and visited[adj[1]] == 0:
+                visited[adj[1]] = 1
+                q.append(adj[1])
+                if adj[1] == end:
+                    return True
+    return False
+        
+
+# Bellman-Ford Algorithm 구현
+def BellmanFord(start,end):
+    Gee = set() # valid cycle 을 확인하기 위한 변수
+    
+    # 기본적인 Bellamn-Ford Algorithm
+    dlist[start] = earn[start]
+    for i in range(vertex): # vertex 번 반복할 것임
+        for j in range(edge): # 모든 edge 에 대해
+            if dlist[edgelist[j][0]] != INF and dlist[edgelist[j][1]] < dlist[edgelist[j][0]] + edgelist[j][2]:
+                dlist[edgelist[j][1]] = dlist[edgelist[j][0]] + edgelist[j][2]
+                if i == vertex-1:
+                    Gee.add(edgelist[j][1])
+            '''        
+            print(dlist,edgelist)    
+            '''
+    
+    # Gee의 각 요소가 end 에 도달하는 cycle 인지 파악
+    isGee = False
+    for i in Gee:
+        if bfs(i,end) == True:
+            isGee = True
+            break
+        
+    # gg / Gee / number 어느 경우인지 결정하여 출력
+    if dlist[end] == INF:
+        return "gg"
+
+    elif isGee == True:
+        return "Gee"
+    else:
+        return dlist[end]
+        
+print(BellmanFord(start,end))
