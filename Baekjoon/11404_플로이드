@@ -1,0 +1,27 @@
+# 플로이드
+city = int(input())
+bus = int(input())
+
+INF = 10**10
+dlist = [[INF for _ in range(city)] for _ in range(city)]
+for i in range(city):
+    dlist[i][i] = 0
+for i in range(bus):
+    a,b,c = map(int,(input().split()))
+    dlist[a-1][b-1] = min(dlist[a-1][b-1],c)
+
+for k in range(city):
+    for i in range(city):
+        for j in range(city):
+            if dlist[i][j] > dlist[i][k] + dlist[k][j]:
+                dlist[i][j] = dlist[i][k] + dlist[k][j]
+
+for i in range(city):
+    for j in range(city):
+        if dlist[i][j] == INF:
+            dlist[i][j] = "0"
+        else:
+            dlist[i][j] = str(dlist[i][j])
+
+for i in range(city):
+    print(' '.join(dlist[i]))
