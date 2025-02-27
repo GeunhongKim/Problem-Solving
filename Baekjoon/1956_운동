@@ -1,0 +1,22 @@
+# 운동
+INF = 10**10
+vertex, edge = map(int,input().split())
+dlist = [[INF for _ in range(vertex)] for _ in range(vertex)]
+
+for i in range(edge):
+    a,b,c = map(int,input().split())
+    dlist[a-1][b-1] = c
+
+for k in range(vertex):
+    for i in range(vertex):
+        for j in range(vertex):
+            if dlist[i][j] > dlist[i][k] + dlist[k][j]:
+                dlist[i][j] = dlist[i][k] + dlist[k][j]
+
+ans = INF
+for i in range(vertex):
+    ans = min(ans,dlist[i][i])
+if ans == INF:
+    print(-1)
+else:
+    print(ans)
