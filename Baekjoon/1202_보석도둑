@@ -1,0 +1,35 @@
+# 보석도둑 : 
+import sys
+import heapq
+from collections import deque
+
+N,K = map(int,sys.stdin.readline().split())
+
+jewellery = [] # deque 사용
+bag = [] # heapq 사용
+
+# jewellery 에 보석의 정보를 [무게,가격] 으로 리스트에 넣어줌
+for i in range(N):
+    a,b = map(int,sys.stdin.readline().split())
+    jewellery.append([a,b])
+jewellery.sort()
+jewellery = deque(jewellery)
+
+# bag 만들기
+for i in range(K):
+    bag.append(int(sys.stdin.readline())) # bag 에 가방크기를 저장
+bag.sort() # 크기순으로 정렬
+
+total = 0
+arl = [] # 임시 heapq
+for newb in bag: # 작은 가방 부터 시작해서
+    while jewellery and newb >= jewellery[0][0]: # 보석을 가치 순으로 꺼내 이번 가방에 들어갈 수 있다면
+        heapq.heappush(arl,-jewellery[0][1]) # heapq 에 각 가치를 넣어줌 : 이전 가방때 들어간 보석은 다음 가방에도 들어갈 수 있음
+        jewellery.popleft()
+    if len(arl) != 0:
+        a = heapq.heappop(arl)
+        total -= a
+    elif not jewellery:
+        break
+
+print(total)
