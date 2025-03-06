@@ -1,0 +1,46 @@
+from collections import deque
+soobin,sis = map(int,input().split())
+
+
+
+def bfs(start,end):
+    if start == end:
+        print(0)
+        print(start)
+        return
+    
+    q = deque()
+    q.append([0,start])
+    visited = [-1 for _ in range(200000)]
+    fromwhere = {}
+    while q:
+        out = q.popleft() # [거리,위치] 나옴.
+        for new in (out[1]+1,out[1]-1,out[1]*2):
+            # 범위 안에 있고 방문하지 않았다면
+            if 0<= new <= 100000 and visited[new-1] == -1: 
+                # 수빈이 가 동생을 만난다면
+                if new == end:
+                    # 길이 출력해줌
+                    print(out[0]+1)
+                    
+                    # 경로도 출력해 줘야 함
+                    fromwhere[new] = out[1]
+                    path = deque()
+                    path.appendleft(new)
+                    bef = new
+                    while True:
+                        a = fromwhere[bef]
+                        path.appendleft(a)
+                        if a == start:
+                            break
+                        bef = a
+                    print(' '.join(list(map(str,path))))
+                    return
+                
+                # 아니라면 visited 를 갱신하고경로를 저장해줄 것
+                else:
+                    q.append([out[0]+1,new])
+                    fromwhere[new] = out[1]
+                    visited[new-1] = 0
+
+bfs(soobin,sis)  
