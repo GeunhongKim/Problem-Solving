@@ -1,0 +1,60 @@
+from collections import deque
+import sys
+
+N,M,K = map(int,input().split())
+mp = [] # 지도 만들기
+for _ in range(N):
+    mp.append(list(sys.stdin.readline()))
+    
+visited = [[0 for _ in range(M)] for _ in range(N)] # visited 만들기
+
+# 시작점, 끝점 만들기
+sy,sx,ey,ex = map(int,input().split())
+
+# 탐색함수 만들기
+def bfs(inx,iny):
+    q = deque()
+    q.append([iny,inx])
+    visited[iny-1][inx-1] = 0
+    while q:
+        '''
+        print(q)
+        '''
+        new = q.popleft()
+        for i in range(4): # 상하좌우
+            for length in range(1,K+1): # 각 길이에 대해
+                dx = [length,0,-length,0]
+                dy = [0,length,0,-length]
+                ny = dy[i] + new[0]
+                nx = dx[i] + new[1]
+                
+                # 종료 조건
+                if (ny,nx) == (ey,ex):
+                    print(visited[new[0]-1][new[1]-1]+1)
+                    return
+                
+                # 만약 범위 안에 있고, 이동가능하다면
+                if (0 <= ny-1 < N and 0 <= nx-1 < M) and mp[ny-1][nx-1] == ".": # 범위 안에 있고 갈 수 있으며 처음 방문한다면
+                    # 기존에 방문한 지점을 더 작거나 같은 값으로 다시 방문한다면
+                    if visited[ny-1][nx-1] > visited[new[0]-1][new[1]-1]:
+                        continue
+                    
+                    # 처음 방문한다면
+                    elif visited[ny-1][nx-1] == 0:
+                        q.append([ny,nx])
+                        visited[ny-1][nx-1] = visited[new[0]-1][new[1]-1]+1
+                        '''
+                        print(ny,nx)
+                        for j in range(N):
+                            print(visited[j])
+                        print("===========")
+                        '''
+                    else: break
+                # non valid case 면 break
+                else:
+                    break
+                        
+    print(-1)
+    return
+
+bfs(sx,sy)
