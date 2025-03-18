@@ -1,0 +1,58 @@
+# 냅색문제
+from itertools import combinations
+
+N,C = map(int,input().split())
+seq = list(map(int,input().split()))
+
+half = N//2
+
+# 절반 나눠서 각각의 direct product 구하기
+left = seq[:half]
+right = seq[half:]
+'''
+print(left,right)
+'''
+
+lfsum = []
+rtsum = []
+
+for i in range(len(left)+1):
+    comb = combinations(left,i)
+    for j in comb:
+        lfsum.append(sum(j))
+
+for i in range(len(right)+1):
+    comb = combinations(right,i)
+    for j in comb:
+        rtsum.append(sum(j))
+
+lfsum.sort()
+'''
+print(lfsum,rtsum)
+'''
+
+# rtsum 의 각 원소에 대해 binary search 해서 합이 C 이하인 경우 찾아줌.
+count = 0
+for rt in rtsum:
+    '''
+    print(rt)
+    '''
+    # pruning invalid case
+    if rt > C:
+        continue
+
+    # binary search
+    start = 0
+    end = len(lfsum)-1
+
+    while start <= end:
+        mid = (start + end)//2
+        if rt + lfsum[mid] > C:
+            end = mid-1 
+
+        else:
+            start = mid + 1
+    
+    count += end + 1
+
+print(count)
