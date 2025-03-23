@@ -1,0 +1,175 @@
+# 구슬탈출 2
+from collections import deque
+N,M = map(int,input().split())
+
+# 구슬들과 구멍 위치 저장해 두고 지도와 visited 만들기
+rs = []
+bs = []
+hole = []
+
+board = []
+for i in range(N):
+    a = list(input())
+    '''
+    print(a)
+    '''
+    for j in range(len(a)):
+        if a[j] == "B": # 파란 구슬 지점
+            bs = [i,j]
+            a[j] = "."
+
+        elif a[j] == "R": # 빨간 구슬 지점
+            rs = [i,j]
+            a[j] = "."
+
+        elif a[j] == "O": # 구멍 지점
+            hole = [i,j]
+    board.append(a)
+
+stb = [0,*rs,*bs]
+visited = [[[[0 for _ in range(M)] for _ in range(N)] for _ in range(M)] for _ in range(N)] # 0 이 blue visited, 1 이 red visited
+
+
+def simul(stball):
+    q = deque()
+    q.append(stball)
+
+    while True:
+        '''
+        print(q)
+        '''
+        # 예외처리 : 더 이상 갈 수 있는 곳이 없다면
+        if len(q) == 0:
+            print(-1)
+            return
+        '''
+        print(q)
+        print("=======blue=======")
+        for i in range(N):
+            print(visited[0][i])
+        print("=======red=======")
+        for i in range(N):
+            print(visited[1][i])
+        print(q)
+        '''
+        new = q.popleft()
+        '''
+        print("new",new)
+        '''
+        blue = new[3:]
+        red = new[1:3]
+        dy = [1,-1,0,0]
+        dx = [0,0,1,-1]
+
+        dirct = ["down","up","right","left"]
+
+        # 만약 10번 이상이 걸리는 경우가 나온다면
+        if new[0] > 10:
+            print(-1)
+            return
+
+        # 각 방향에 대해 기울이기
+        for i in range(4):
+            # 시작점 초기화 + finred/finblue 초기화
+            '''
+            print(dirct[i])
+            '''
+            blue = new[3:]
+            red = new[1:3]
+            finred = False
+            finblue = False
+            
+            # red 를 계산해줌
+            mul = 0
+            while True:
+                mul += 1
+                ny = red[0] + dy[i]*mul
+                nx = red[1] + dx[i]*mul
+                '''
+                print("r",ny,nx)
+                '''
+                # 범위 마지막 칸이거나 그 다음 칸이 벅이거나 파란 공이면 멈춤
+                if (ny < 0 or ny >= N) or (nx < 0 or nx >= M-1) or board[ny][nx] == "#" or [ny,nx] == new[3:]:
+                    red = [ny-dy[i],nx-dx[i]]
+                    break
+                # 만약 빨간 구슬이 구멍에 들어가면
+                elif ny == hole[0] and nx == hole[1]:
+                    finred = True
+                    red = [ny,nx]
+                    '''
+                    print("R",red)
+                    '''
+                    break
+                
+            # blue 를 계산해줌
+            cb = 0
+            mul = 0
+            while True:
+                mul += 1
+                ny = blue[0] + dy[i]*mul
+                nx = blue[1] + dx[i]*mul
+                '''
+                print("b",ny,nx)
+                '''
+                # 범위 마지막 칸이거나 그 다음 칸이 벅이거나 빨간 공이면 멈춤
+                if (ny < 0 or ny >= N) or (nx < 0 or nx >= M-1) or board[ny][nx] == "#" or ([ny,nx] == red and finred == False):
+                    blue = [ny-dy[i],nx-dx[i]]
+                    break
+                # 만약 파란 구슬이 구멍에 들어가면 : finblue 갱신해주고, cb 올려줌
+                elif ny == hole[0] and nx == hole[1]:
+                    finblue = True
+                    '''
+                    print("ang",ny,nx)
+                    '''
+                    break
+
+            # red 를 다시 계산해줌
+            cr = 0
+            mul = 0
+            while True:
+                mul += 1
+                ny = red[0] + dy[i]*mul
+                nx = red[1] + dx[i]*mul
+                '''
+                print("r",ny,nx)
+                '''
+                # 범위 마지막 칸이거나 그 다음 칸이 벅이거나 파란 공이면 멈춤
+                if (ny < 0 or ny >= N) or (nx < 0 or nx >= M-1) or board[ny][nx] == "#" or [ny,nx] == blue:
+                    red = [ny-dy[i],nx-dx[i]]
+                    '''
+                    print("R2",red)
+                    '''
+                    break
+                # 만약 빨간 구슬이 구멍에 들어가면
+                elif ny == hole[0] and nx == hole[1]:
+                    finred = True
+                    break
+            '''
+            print("blue",blue,finblue)
+            print("red",red,finred)
+            print(blue,red,finblue,finred,visited[blue[0]][blue[1]][red[0]][red[1]])
+            '''
+
+
+            # 만약 빨간 구슬이 들어가고 파란 구슬은 들어가지 않는다면
+            if finred == True and finblue == False:
+                if new[0]+1 == 11:
+                    print(-1)
+                else:
+                    print(new[0]+1)
+                return
+            
+            # 파란 구슬만 들어가면
+            elif (finblue == True and finred == False) or (finblue == True and finred == True):
+                continue
+
+            # 둘다 끝나지 않고 red/blue 지점이 처음 방문하는 지점이라면 : 새로 이동한 위치를 deque 에 넣어주고 위치 갱신
+            elif visited[blue[0]][blue[1]][red[0]][red[1]] == 0:
+                q.append([new[0]+1,*red,*blue])
+                visited[blue[0]][blue[1]][red[0]][red[1]] = 1
+            
+            # 둘다 끝나지 않지만 이전에 왔던 (red,blue) 에 대시 방문한다면 : 무시
+            else:
+                pass
+
+simul(stb)
