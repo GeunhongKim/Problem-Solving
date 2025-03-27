@@ -1,0 +1,82 @@
+import heapq
+INF = 10**10
+
+n, m = map(int, input().split())
+
+graph = {}
+invgraph = {}
+for i in range(n):
+    graph[i+1] = []
+    invgraph[i+1] = []
+
+# 중복을 피하기 위해 set 사용
+adjst = set()
+find = {}    # 시작방에서 각 인접 노드까지의 비용 (forward)
+invfind = {} # 각 인접 노드에서 시작방까지의 비용 (역방향)
+for _ in range(m):
+    a, b, c, d = map(int, input().split())
+    if a == 1:
+        adjst.add(b)
+        find[b] = c
+        invfind[b] = d
+    if b == 1:
+        adjst.add(a)
+        find[a] = d
+        invfind[a] = c
+    graph[a].append((c, b))
+    graph[b].append((d, a))
+    invgraph[a].append((d, b))
+    invgraph[b].append((c, a))
+
+# [1] forward 다익스트라: 시작방(1번)에서 graph를 따라 최단거리(dlist)와
+#     처음 연결한 방(fromwhr)을 계산.
+dlist = [INF] * n
+fromwhr = [0] * n
+dlist[0] = 0
+pq = []
+for pnt in adjst:
+    fromwhr[pnt-1] = pnt
+    dlist[pnt-1] = find[pnt]
+    heapq.heappush(pq, [find[pnt], pnt, pnt])  # [비용, 현재 노드, 시작방과 바로 연결된 초기 노드]
+while pq:
+    cost, node, init = heapq.heappop(pq)
+    if cost != dlist[node-1]:
+        continue
+    fromwhr[node-1] = init
+    for w, nxt in graph[node]:
+        if dlist[nxt-1] > cost + w:
+            dlist[nxt-1] = cost + w
+            fromwhr[nxt-1] = init
+            heapq.heappush(pq, [dlist[nxt-1], nxt, init])
+
+# [2] reverse 다익스트라: 시작방(1번)과 직접 연결된 각 노드(invgraph[1]의 각 원소)에 대해 수행.
+ans = INF
+# invgraph[1]에 있는 모든 (비용, 노드) 쌍에 대해
+for cost0, col in invgraph[1]:
+    dlist2 = [INF] * n
+    revwhr = [0] * n 
+    pq2 = []
+    heapq.heappush(pq2, [cost0, col, 0])  # [비용, 현재 노드, pa]
+    dlist2[col-1] = cost0
+    dlist2[0] = 0  # 시작방(1번)은 0으로 고정
+    while pq2:
+        cost2, node2, pa = heapq.heappop(pq2)
+        if cost2 != dlist2[node2-1]:
+            continue
+        # forward 경로에서 해당 노드에 대해 출발한 이웃(fromwhr)이 현재 col과 다르면
+        # 갈 때와 올 때의 경로가 달라지므로 답 후보로 갱신.
+        if fromwhr[node2-1] != col:
+            ans = min(ans, cost2 + dlist[node2-1])
+            continue
+        for w, nxt in invgraph[node2]:
+            if dlist2[nxt-1] > cost2 + w:
+                dlist2[nxt-1] = cost2 + w
+                heapq.heappush(pq2, [dlist2[nxt-1], nxt, 0])
+                revwhr[nxt-1] = 0
+        # 만약 현재 노드가 시작점과 직접 연결된 노드 col이면, 
+        # 시작방(1번)으로 돌아가는 비용을 크게 만들어 바로 돌아가는 경우를 배제.
+        if node2 == col:
+            dlist2[0] = 10**9 + 7
+
+print(ans)
+
